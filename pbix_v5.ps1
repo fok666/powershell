@@ -1,4 +1,4 @@
-﻿#
+#
 # TO DO
 #
 # [ok] inventário de tabelas, campos, measures, sources, visuals
@@ -549,7 +549,7 @@ function get-visualInfo($s, $v)
 
     if( $null -ne $v.config )
     {
-        $c = $v.config  | ConvertFrom-Json
+        $c = $v.config.ToLower() | ConvertFrom-Json
 
         if( $null -ne $c.singleVisual.prototypeQuery.From ){
             $from   = $c.singleVisual.prototypeQuery.From | ConvertTo-FlatObject 
@@ -767,7 +767,7 @@ $server.Databases[0].Model.DataSources | ForEach-Object {
 Write-Host "Extraindo Expressions"
 
 $server.Databases[0].Model.Expressions | ForEach-Object {
-    $datasources += @{ datasource=$_.Expression.ToString().Replace("#(lf)", "`n").Replace("#(tab)", "`t") }
+    $datasources += @{ Name=$_.Name; datasource=$_.Expression.ToString().Replace("#(lf)", "`n").Replace("#(tab)", "`t") }
 }
 
 $tables = @()
@@ -853,6 +853,7 @@ $server.Databases[0].Model.Tables | ForEach-Object {
             $c = $_
             $expr += @{ Table=$t.Name; Tipo="Calculated"; Name=$c.Name; Expression=$c.Expression; }
         }
+	$datasources += @{ Name=$t.Name; datasource=$t.Partitions[0].Source.Expression.ToString().Replace("#(lf)", "`n").Replace("#(tab)", "`t") }
     }
 }
 
